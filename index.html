@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LINK10 · Tratador de Planilhas para WhatsApp</title>
+  <meta name="description" content="Limpe, normalize e adicione o DDI 55 em listas de telefone de planilhas Excel para envio via WhatsApp. 100% no navegador." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">📱</span>
+      <div>
+        <h1>LINK10 · Tratador de Planilhas</h1>
+        <p class="subtitle">Padroniza números de telefone para WhatsApp em um clique. Tudo roda no seu navegador — nada é enviado para servidores.</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- STEP 1: UPLOAD -->
+    <section id="step-upload" class="card">
+      <div class="step-header">
+        <span class="step-num">1</span>
+        <h2>Envie a planilha</h2>
+      </div>
+      <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Clique ou arraste um arquivo .xlsx aqui">
+        <div class="dz-icon">📂</div>
+        <div class="dz-title">Arraste o arquivo aqui ou clique para selecionar</div>
+        <div class="dz-hint">Formatos aceitos: .xlsx, .xls, .csv</div>
+        <input type="file" id="file-input" accept=".xlsx,.xls,.csv" hidden />
+      </div>
+      <div id="file-info" class="file-info hidden">
+        <div class="file-meta">
+          <span class="file-name" id="file-name"></span>
+          <span class="file-extra" id="file-extra"></span>
+        </div>
+        <button class="btn-link" id="btn-reset" type="button">trocar arquivo</button>
+      </div>
+    </section>
+
+    <!-- STEP 2: CONFIG -->
+    <section id="step-config" class="card hidden">
+      <div class="step-header">
+        <span class="step-num">2</span>
+        <h2>Configure o tratamento</h2>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label for="sheet-select">Aba da planilha</label>
+          <select id="sheet-select"></select>
+        </div>
+
+        <div class="field">
+          <label class="checkbox-row">
+            <input type="checkbox" id="has-header" />
+            <span>A primeira linha é cabeçalho</span>
+          </label>
+          <small class="hint">Desmarque se a primeira linha já contém dados (caso da Inad_1905).</small>
+        </div>
+
+        <div class="field">
+          <label for="phone-column">Coluna do telefone</label>
+          <select id="phone-column"></select>
+          <small class="hint" id="phone-sample"></small>
+        </div>
+
+        <div class="field">
+          <label for="country-code">DDI / Código do país</label>
+          <input type="text" id="country-code" value="55" maxlength="4" inputmode="numeric" />
+          <small class="hint">Será adicionado no início se ainda não existir.</small>
+        </div>
+
+        <div class="field">
+          <label class="checkbox-row">
+            <input type="checkbox" id="smart-prefix" checked />
+            <span>Prefixo inteligente</span>
+          </label>
+          <small class="hint">Não adiciona o DDI se o número já tiver 12 ou 13 dígitos começando com ele.</small>
+        </div>
+
+        <div class="field">
+          <label class="checkbox-row">
+            <input type="checkbox" id="remove-duplicates" checked />
+            <span>Remover duplicatas</span>
+          </label>
+          <small class="hint">Mantém apenas a primeira ocorrência do mesmo número.</small>
+        </div>
+
+        <div class="field">
+          <label class="checkbox-row">
+            <input type="checkbox" id="filter-invalid" checked />
+            <span>Descartar números inválidos</span>
+          </label>
+          <small class="hint">Remove linhas onde o número tem menos do que o mínimo abaixo.</small>
+        </div>
+
+        <div class="field">
+          <label for="min-digits">Mínimo de dígitos válidos</label>
+          <input type="number" id="min-digits" value="10" min="6" max="15" />
+          <small class="hint">Brasil: 10 (fixo) ou 11 (celular).</small>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-primary" id="btn-process" type="button">
+          <span class="btn-label">Processar planilha</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 3: RESULT -->
+    <section id="step-result" class="card hidden">
+      <div class="step-header">
+        <span class="step-num">3</span>
+        <h2>Resultado</h2>
+      </div>
+
+      <div class="stats" id="stats">
+        <div class="stat"><span class="stat-num" id="stat-total">0</span><span class="stat-label">total</span></div>
+        <div class="stat ok"><span class="stat-num" id="stat-clean">0</span><span class="stat-label">tratados</span></div>
+        <div class="stat warn"><span class="stat-num" id="stat-dup">0</span><span class="stat-label">duplicatas</span></div>
+        <div class="stat err"><span class="stat-num" id="stat-invalid">0</span><span class="stat-label">inválidos</span></div>
+      </div>
+
+      <h3 class="preview-title">Pré-visualização (primeiras 10 linhas)</h3>
+      <div class="table-wrap">
+        <table id="preview-table"></table>
+      </div>
+
+      <div class="actions">
+        <button class="btn-secondary" id="btn-back" type="button">← Ajustar configuração</button>
+        <button class="btn-primary" id="btn-export" type="button">
+          <span class="btn-label">⬇ Baixar planilha tratada (.xlsx)</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  </main>
+
+  <footer class="footer">
+    <span>Feito para LINK10 · <a href="https://github.com" target="_blank" rel="noopener">código aberto</a> · roda 100% no navegador</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (não usamos, mas previne sujeira caso alguém instale algo)
+node_modules/
+npm-debug.log*
+
+# Planilhas locais de teste (NUNCA suba dados reais de clientes para o repositório)
+*.xlsx
+*.xls
+*.csv
+!sample.xlsx
