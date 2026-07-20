@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tratador de Planilhas para WhatsApp</title>
   <meta name="description" content="Limpe, normalize e adicione o DDI 55 em listas de telefone de planilhas Excel para envio via WhatsApp. 100% no navegador." />
-  <link rel="stylesheet" href="styles.css?v=2" />
+  <link rel="stylesheet" href="styles.css?v=3" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>" />
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -13,10 +13,11 @@
   <header class="topbar">
     <div class="brand">
       <span class="logo" aria-hidden="true">📱</span>
-      <div>
+      <div class="brand-text">
         <h1>Tratador de Planilhas</h1>
         <p class="subtitle">Padroniza números de telefone para WhatsApp em um clique. Tudo roda no seu navegador — nada é enviado para servidores.</p>
       </div>
+      <span class="badge" title="Nenhum dado sai do seu navegador">🔒 100% local</span>
     </div>
   </header>
 
@@ -25,18 +26,24 @@
     <section id="step-upload" class="card">
       <div class="step-header">
         <span class="step-num">1</span>
-        <h2>Envie a planilha</h2>
+        <div>
+          <h2>Envie a planilha</h2>
+          <p class="step-desc">Arquivos aceitos: <code>.xlsx</code>, <code>.xls</code> ou <code>.csv</code>.</p>
+        </div>
       </div>
       <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Clique ou arraste um arquivo .xlsx aqui">
         <div class="dz-icon">📂</div>
-        <div class="dz-title">Arraste o arquivo aqui ou clique para selecionar</div>
-        <div class="dz-hint">Formatos aceitos: .xlsx, .xls, .csv</div>
+        <div class="dz-title">Arraste o arquivo aqui ou <span class="dz-link">clique para selecionar</span></div>
+        <div class="dz-hint">Nenhum arquivo é enviado para servidores.</div>
         <input type="file" id="file-input" accept=".xlsx,.xls,.csv" hidden />
       </div>
       <div id="file-info" class="file-info hidden">
         <div class="file-meta">
-          <span class="file-name" id="file-name"></span>
-          <span class="file-extra" id="file-extra"></span>
+          <span class="file-icon" aria-hidden="true">📄</span>
+          <div class="file-meta-text">
+            <span class="file-name" id="file-name"></span>
+            <span class="file-extra" id="file-extra"></span>
+          </div>
         </div>
         <button class="btn-link" id="btn-reset" type="button">trocar arquivo</button>
       </div>
@@ -46,69 +53,80 @@
     <section id="step-config" class="card hidden">
       <div class="step-header">
         <span class="step-num">2</span>
-        <h2>Configure o tratamento</h2>
+        <div>
+          <h2>Configure o tratamento</h2>
+          <p class="step-desc">Escolha as colunas e as regras de limpeza dos números.</p>
+        </div>
       </div>
 
-      <div class="grid">
-        <div class="field">
-          <label for="sheet-select">Aba da planilha</label>
-          <select id="sheet-select"></select>
-        </div>
+      <div class="config-group">
+        <h3 class="group-title">Origem dos dados</h3>
+        <div class="grid">
+          <div class="field">
+            <label for="sheet-select">Aba da planilha</label>
+            <select id="sheet-select"></select>
+          </div>
 
-        <div class="field">
-          <label class="checkbox-row">
-            <input type="checkbox" id="has-header" />
-            <span>A primeira linha é cabeçalho</span>
+          <div class="field">
+            <label for="phone-column">Coluna do telefone</label>
+            <select id="phone-column"></select>
+            <small class="hint" id="phone-sample"></small>
+          </div>
+
+          <div class="field">
+            <label for="name-column">Coluna do nome</label>
+            <select id="name-column"></select>
+            <small class="hint">Usada na exportação no formato COBRANCA. Escolha "(nenhuma)" para deixar em branco.</small>
+          </div>
+
+          <label class="toggle-card">
+            <input type="checkbox" id="has-header" checked />
+            <span class="toggle-body">
+              <span class="toggle-title">A primeira linha é cabeçalho</span>
+              <span class="hint">Desmarque se a primeira linha já contém dados (caso da Inad_1905).</span>
+            </span>
           </label>
-          <small class="hint">Desmarque se a primeira linha já contém dados (caso da Inad_1905).</small>
         </div>
+      </div>
 
-        <div class="field">
-          <label for="phone-column">Coluna do telefone</label>
-          <select id="phone-column"></select>
-          <small class="hint" id="phone-sample"></small>
-        </div>
+      <div class="config-group">
+        <h3 class="group-title">Regras de limpeza</h3>
+        <div class="grid">
+          <div class="field">
+            <label for="country-code">DDI / Código do país</label>
+            <input type="text" id="country-code" value="55" maxlength="4" inputmode="numeric" />
+            <small class="hint">Será adicionado no início se ainda não existir.</small>
+          </div>
 
-        <div class="field">
-          <label for="name-column">Coluna do nome</label>
-          <select id="name-column"></select>
-          <small class="hint">Usada na exportação no formato COBRANCA. Escolha "(nenhuma)" para deixar em branco.</small>
-        </div>
+          <div class="field">
+            <label for="min-digits">Mínimo de dígitos válidos</label>
+            <input type="number" id="min-digits" value="10" min="6" max="15" />
+            <small class="hint">Brasil: 10 (fixo) ou 11 (celular).</small>
+          </div>
 
-        <div class="field">
-          <label for="country-code">DDI / Código do país</label>
-          <input type="text" id="country-code" value="55" maxlength="4" inputmode="numeric" />
-          <small class="hint">Será adicionado no início se ainda não existir.</small>
-        </div>
-
-        <div class="field">
-          <label class="checkbox-row">
+          <label class="toggle-card">
             <input type="checkbox" id="smart-prefix" checked />
-            <span>Prefixo inteligente</span>
+            <span class="toggle-body">
+              <span class="toggle-title">Prefixo inteligente</span>
+              <span class="hint">Não adiciona o DDI se o número já tiver 12 ou 13 dígitos começando com ele.</span>
+            </span>
           </label>
-          <small class="hint">Não adiciona o DDI se o número já tiver 12 ou 13 dígitos começando com ele.</small>
-        </div>
 
-        <div class="field">
-          <label class="checkbox-row">
+          <label class="toggle-card">
             <input type="checkbox" id="remove-duplicates" checked />
-            <span>Remover duplicatas</span>
+            <span class="toggle-body">
+              <span class="toggle-title">Remover duplicatas</span>
+              <span class="hint">Mantém apenas a primeira ocorrência do mesmo número.</span>
+            </span>
           </label>
-          <small class="hint">Mantém apenas a primeira ocorrência do mesmo número.</small>
-        </div>
 
-        <div class="field">
-          <label class="checkbox-row">
+          <label class="toggle-card">
             <input type="checkbox" id="filter-invalid" checked />
-            <span>Descartar números inválidos</span>
+            <span class="toggle-body">
+              <span class="toggle-title">Descartar números inválidos</span>
+              <span class="hint">Remove linhas onde o número tem menos do que o mínimo definido.</span>
+            </span>
           </label>
-          <small class="hint">Remove linhas onde o número tem menos do que o mínimo abaixo.</small>
-        </div>
-
-        <div class="field">
-          <label for="min-digits">Mínimo de dígitos válidos</label>
-          <input type="number" id="min-digits" value="10" min="6" max="15" />
-          <small class="hint">Brasil: 10 (fixo) ou 11 (celular).</small>
         </div>
       </div>
 
@@ -124,7 +142,10 @@
     <section id="step-result" class="card hidden">
       <div class="step-header">
         <span class="step-num">3</span>
-        <h2>Resultado</h2>
+        <div>
+          <h2>Resultado</h2>
+          <p class="step-desc">Confira os totais e a prévia antes de baixar.</p>
+        </div>
       </div>
 
       <div class="stats" id="stats">
@@ -134,7 +155,7 @@
         <div class="stat err"><span class="stat-num" id="stat-invalid">0</span><span class="stat-label">inválidos</span></div>
       </div>
 
-      <h3 class="preview-title">Pré-visualização (primeiras 10 linhas)</h3>
+      <h3 class="preview-title">Pré-visualização <span class="preview-sub">(primeiras 10 linhas)</span></h3>
       <div class="table-wrap">
         <table id="preview-table"></table>
       </div>
@@ -148,13 +169,15 @@
       </div>
 
       <div class="export-cobranca">
-        <h3 class="preview-title">Exportar no formato COBRANCA</h3>
-        <p class="hint">
-          Gera um arquivo igual ao modelo <strong>COBRANCA</strong>: a coluna
-          <strong>telefone</strong> recebe o número já tratado, a coluna
-          <strong>nome</strong> vem da coluna selecionada acima, e a coluna
-          <strong>whatsapp</strong> é preenchida com o número abaixo em todas as linhas.
-        </p>
+        <div class="export-cobranca-head">
+          <span class="export-badge">Formato COBRANCA</span>
+          <p class="hint">
+            Gera um arquivo igual ao modelo <strong>COBRANCA</strong>: a coluna
+            <strong>telefone</strong> recebe o número já tratado, a coluna
+            <strong>nome</strong> vem da coluna selecionada acima, e a coluna
+            <strong>whatsapp</strong> é preenchida com o número abaixo em todas as linhas.
+          </p>
+        </div>
         <div class="cobranca-row">
           <div class="field">
             <label for="whatsapp-value">Número da coluna "whatsapp"</label>
@@ -174,9 +197,9 @@
   </main>
 
   <footer class="footer">
-    <span>Feita pela Prisme · <a href="https://github.com" target="_blank" rel="noopener">código aberto</a> · roda 100% no navegador</span>
+    <span>Feita pela Prisme · <a href="https://github.com/nattanlima/corretor-planilhas" target="_blank" rel="noopener">código aberto</a> · roda 100% no navegador</span>
   </footer>
 
-  <script src="app.js?v=2"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
