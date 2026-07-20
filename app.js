@@ -1,4 +1,4 @@
-/* LINK10 · Tratador de Planilhas para WhatsApp
+/* Tratador de Planilhas para WhatsApp
  * Roda 100% no navegador. Usa SheetJS (xlsx) carregado via CDN.
  */
 (function () {
@@ -19,6 +19,7 @@
     hasHeader: document.getElementById("has-header"),
     phoneColumn: document.getElementById("phone-column"),
     phoneSample: document.getElementById("phone-sample"),
+    nameColumn: document.getElementById("name-column"),
     countryCode: document.getElementById("country-code"),
     smartPrefix: document.getElementById("smart-prefix"),
     removeDuplicates: document.getElementById("remove-duplicates"),
@@ -28,6 +29,8 @@
     btnProcess: document.getElementById("btn-process"),
     btnBack: document.getElementById("btn-back"),
     btnExport: document.getElementById("btn-export"),
+    btnExportCobranca: document.getElementById("btn-export-cobranca"),
+    whatsappValue: document.getElementById("whatsapp-value"),
 
     statTotal: document.getElementById("stat-total"),
     statClean: document.getElementById("stat-clean"),
@@ -291,9 +294,41 @@
       els.phoneColumn.appendChild(opt);
     });
 
+    // Name column selector (optional — used by the COBRANCA export).
+    els.nameColumn.innerHTML = "";
+    const noneOpt = document.createElement("option");
+    noneOpt.value = "";
+    noneOpt.textContent = "(nenhuma — deixar em branco)";
+    els.nameColumn.appendChild(noneOpt);
+    state.headers.forEach((h, i) => {
+      const opt = document.createElement("option");
+      opt.value = String(i);
+      const sampleRowStart = hasHeader ? 1 : 0;
+      const samples = state.sheetData
+        .slice(sampleRowStart, sampleRowStart + 3)
+        .map((r) => r[i])
+        .filter((v) => v !== "" && v !== null && v !== undefined)
+        .map((v) => String(v));
+      const sampleText = samples.length ? " — ex: " + samples[0] : "";
+      opt.textContent = `${h} (${colLetter(i)})${sampleText}`;
+      els.nameColumn.appendChild(opt);
+    });
+    autoDetectNameColumn(hasHeader);
+
     // Try to auto-detect phone column (longest numeric ratio in first ~20 rows)
     autoDetectPhoneColumn(hasHeader);
     updatePhoneSample();
+  }
+
+  /** Guesses the name column from headers (only works when a header row exists). */
+  function autoDetectNameColumn(hasHeader) {
+    if (!hasHeader) return; // sem cabeçalho não há como adivinhar o nome
+    for (let i = 0; i < state.headers.length; i++) {
+      if (/\bnome\b|\bname\b|cliente|razao|razão/i.test(state.headers[i])) {
+        els.nameColumn.value = String(i);
+        return;
+      }
+    }
   }
 
   function autoDetectPhoneColumn(hasHeader) {
@@ -529,6 +564,92 @@
     }
   }
 
+  // ---------- Export no formato COBRANCA ----------
+
+  // Cabeçalho idêntico ao modelo COBRANCA 14-07.xlsx (colunas A–P).
+  // Índice 10 (coluna K) é intencionalmente vazio, como no arquivo original.
+  const COBRANCA_HEADERS = [
+    "telefone", "nome", "email", "cpfcnpj", "genero", "estado",
+    "cidade", "referencia", "aniversario", "endereco", null,
+    "atualizar", "carteira", "whatsapp", "tag", "status",
+  ];
+  const COB_TELEFONE = 0;
+  const COB_NOME = 1;
+  const COB_WHATSAPP = 13;
+
+  async function exportCobranca() {
+    if (!state.processed) return;
+    setButtonLoading(els.btnExportCobranca, true, "Gerando arquivo...");
+    await uiYield();
+
+    try {
+      const t0 = performance.now();
+      const { rows } = state.processed;
+
+      // Valor constante da coluna "whatsapp" (aplicado a todas as linhas).
+      const rawWa = String(els.whatsappValue.value || "").trim();
+      const waNum = rawWa === "" ? null : Number(rawWa);
+      const waIsNumeric = waNum !== null && !Number.isNaN(waNum);
+
+      // Índice da coluna do nome dentro da planilha original ("" = nenhuma).
+      const nameSel = els.nameColumn.value;
+      const nameIdx = nameSel === "" ? null : parseInt(nameSel, 10);
+
+      const aoa = [COBRANCA_HEADERS.slice()];
+      for (const row of rows) {
+        const outRow = new Array(COBRANCA_HEADERS.length).fill(null);
+        // row[0] é o número já tratado (com DDI). Nas linhas processadas as
+        // colunas originais ficam deslocadas em +1 (a coluna whatsapp foi
+        // adicionada no início), por isso nameIdx + 1.
+        outRow[COB_TELEFONE] = row[0];
+        if (nameIdx !== null) {
+          const nameVal = row[nameIdx + 1];
+          if (nameVal !== null && nameVal !== undefined && nameVal !== "") {
+            outRow[COB_NOME] = nameVal;
+          }
+        }
+        if (rawWa !== "") {
+          outRow[COB_WHATSAPP] = waIsNumeric ? waNum : rawWa;
+        }
+        aoa.push(outRow);
+      }
+
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+      // Coluna "telefone" gravada como TEXTO, para o Excel não cortar o "55"
+      // nem converter para notação científica.
+      for (let r = 1; r < aoa.length; r++) {
+        const ref = XLSX.utils.encode_cell({ r, c: COB_TELEFONE });
+        if (ws[ref] && ws[ref].v !== null && ws[ref].v !== undefined && ws[ref].v !== "") {
+          ws[ref].t = "s";
+          ws[ref].v = String(ws[ref].v);
+        }
+      }
+
+      ws["!cols"] = COBRANCA_HEADERS.map((h, i) => {
+        if (i === COB_TELEFONE) return { wch: 16 };
+        if (i === COB_NOME) return { wch: 32 };
+        return { wch: Math.max(8, String(h || "").length + 2) };
+      });
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Página1");
+
+      const baseName = state.fileName.replace(/\.(xlsx|xls|csv)$/i, "");
+      const outName = `${baseName}_cobranca.xlsx`;
+      XLSX.writeFile(wb, outName);
+
+      const elapsed = performance.now() - t0;
+      console.info(`[bench] exportCobranca: ${elapsed.toFixed(1)} ms for ${rows.length} rows`);
+      showToast(`Arquivo salvo: ${outName}`, "success");
+    } catch (err) {
+      console.error(err);
+      showToast("Erro ao exportar (COBRANCA): " + err.message, "error");
+    } finally {
+      setButtonLoading(els.btnExportCobranca, false);
+    }
+  }
+
   // ---------- Wire-up ----------
 
   function init() {
@@ -545,6 +666,7 @@
 
     els.btnProcess.addEventListener("click", processRows);
     els.btnExport.addEventListener("click", exportXlsx);
+    els.btnExportCobranca.addEventListener("click", exportCobranca);
     els.btnBack.addEventListener("click", () => {
       els.stepResult.classList.add("hidden");
       els.stepConfig.scrollIntoView({ behavior: "smooth", block: "start" });

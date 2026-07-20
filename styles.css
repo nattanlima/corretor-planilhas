@@ -311,6 +311,22 @@ td.whatsapp-cell { color: var(--ok); font-weight: 600; font-family: "SF Mono", "
 td.original-cell { color: var(--text-dim); font-family: "SF Mono", "Cascadia Mono", Consolas, monospace; }
 tbody tr:hover { background: var(--surface-2); }
 
+/* COBRANCA export */
+.export-cobranca {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.export-cobranca .hint { margin: 0 0 16px; }
+.cobranca-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.cobranca-row .field { flex: 0 1 240px; }
+.cobranca-row .btn-primary { margin-bottom: 2px; }
+
 /* Toast */
 .toast {
   position: fixed;

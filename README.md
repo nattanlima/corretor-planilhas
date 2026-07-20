@@ -1,8 +1,8 @@
-# LINK10 · Tratador de Planilhas para WhatsApp
+# Tratador de Planilhas para WhatsApp
 
 App **100% no navegador** para tratar planilhas Excel e padronizar números de telefone no formato WhatsApp (com DDI `55` no início, somente dígitos). Nada é enviado para servidor — a planilha é processada localmente.
 
-> Pensado para o fluxo de inadimplência da LINK10, mas funciona com qualquer planilha que tenha uma coluna de telefone.
+> Pensado para fluxos de cobrança/inadimplência, mas funciona com qualquer planilha que tenha uma coluna de telefone.
 
 ## Funcionalidades
 
@@ -20,6 +20,7 @@ App **100% no navegador** para tratar planilhas Excel e padronizar números de t
 - Estatísticas: total, tratados, duplicatas removidas, inválidos descartados
 - Exporta novo `.xlsx` com a coluna `whatsapp` adicionada no início + todas as colunas originais
 - A coluna `whatsapp` é gravada como texto, garantindo que o Excel não corte o `55` ou converta para notação científica
+- **Exportação no formato COBRANCA**: gera um arquivo com o mesmo layout do modelo `COBRANCA` (aba `Página1`, colunas `telefone`, `nome`, ..., `whatsapp`), com o número tratado em `telefone`, o `nome` da coluna selecionada e um valor fixo (padrão `56`, configurável) na coluna `whatsapp` em todas as linhas
 
 ## Como usar
 
@@ -30,6 +31,17 @@ App **100% no navegador** para tratar planilhas Excel e padronizar números de t
 5. Clique em **Processar planilha**
 6. Confira o preview e os totais
 7. Clique em **Baixar planilha tratada (.xlsx)**
+
+## Exportar no formato COBRANCA
+
+Além do download padrão, o passo **Resultado** traz um botão **"Baixar no formato COBRANCA (.xlsx)"**, que gera um arquivo idêntico ao modelo `COBRANCA`:
+
+- Aba chamada `Página1`
+- Cabeçalho: `telefone`, `nome`, `email`, `cpfcnpj`, `genero`, `estado`, `cidade`, `referencia`, `aniversario`, `endereco`, (coluna vazia), `atualizar`, `carteira`, `whatsapp`, `tag`, `status`
+- **`telefone`** ← número já tratado (com DDI, gravado como texto)
+- **`nome`** ← coluna de nome selecionada no passo 2 (escolha "(nenhuma)" para deixar em branco)
+- **`whatsapp`** ← valor fixo aplicado a todas as linhas (padrão `56`, editável no próprio passo Resultado)
+- Demais colunas ficam em branco
 
 ## Rodar localmente
 
@@ -88,7 +100,7 @@ git push -u origin main
 ## Estrutura do projeto
 
 ```
-LINK10APP/
+corretor-planilhas/
 ├── index.html      # UI
 ├── styles.css      # Estilo dark, inspirado no WhatsApp
 ├── app.js          # Lógica (leitura/escrita xlsx, limpeza)

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LINK10 · Tratador de Planilhas para WhatsApp</title>
+  <title>Tratador de Planilhas para WhatsApp</title>
   <meta name="description" content="Limpe, normalize e adicione o DDI 55 em listas de telefone de planilhas Excel para envio via WhatsApp. 100% no navegador." />
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>" />
@@ -14,7 +14,7 @@
     <div class="brand">
       <span class="logo" aria-hidden="true">📱</span>
       <div>
-        <h1>LINK10 · Tratador de Planilhas</h1>
+        <h1>Tratador de Planilhas</h1>
         <p class="subtitle">Padroniza números de telefone para WhatsApp em um clique. Tudo roda no seu navegador — nada é enviado para servidores.</p>
       </div>
     </div>
@@ -67,6 +67,12 @@
           <label for="phone-column">Coluna do telefone</label>
           <select id="phone-column"></select>
           <small class="hint" id="phone-sample"></small>
+        </div>
+
+        <div class="field">
+          <label for="name-column">Coluna do nome</label>
+          <select id="name-column"></select>
+          <small class="hint">Usada na exportação no formato COBRANCA. Escolha "(nenhuma)" para deixar em branco.</small>
         </div>
 
         <div class="field">
@@ -139,6 +145,27 @@
           <span class="btn-label">⬇ Baixar planilha tratada (.xlsx)</span>
           <span class="btn-spinner" aria-hidden="true"></span>
         </button>
+      </div>
+
+      <div class="export-cobranca">
+        <h3 class="preview-title">Exportar no formato COBRANCA</h3>
+        <p class="hint">
+          Gera um arquivo igual ao modelo <strong>COBRANCA</strong>: a coluna
+          <strong>telefone</strong> recebe o número já tratado, a coluna
+          <strong>nome</strong> vem da coluna selecionada acima, e a coluna
+          <strong>whatsapp</strong> é preenchida com o número abaixo em todas as linhas.
+        </p>
+        <div class="cobranca-row">
+          <div class="field">
+            <label for="whatsapp-value">Número da coluna "whatsapp"</label>
+            <input type="number" id="whatsapp-value" value="56" min="0" step="1" inputmode="numeric" />
+            <small class="hint">Aplicado a todas as linhas. Padrão: 56.</small>
+          </div>
+          <button class="btn-primary" id="btn-export-cobranca" type="button">
+            <span class="btn-label">⬇ Baixar no formato COBRANCA (.xlsx)</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+          </button>
+        </div>
       </div>
     </section>
 
