@@ -31,6 +31,7 @@
     btnExport: document.getElementById("btn-export"),
     btnExportCobranca: document.getElementById("btn-export-cobranca"),
     whatsappValue: document.getElementById("whatsapp-value"),
+    atualizarValue: document.getElementById("atualizar-value"),
 
     statTotal: document.getElementById("stat-total"),
     statClean: document.getElementById("stat-clean"),
@@ -575,6 +576,7 @@
   ];
   const COB_TELEFONE = 0;
   const COB_NOME = 1;
+  const COB_ATUALIZAR = 11;
   const COB_WHATSAPP = 13;
 
   async function exportCobranca() {
@@ -590,6 +592,11 @@
       const rawWa = String(els.whatsappValue.value || "").trim();
       const waNum = rawWa === "" ? null : Number(rawWa);
       const waIsNumeric = waNum !== null && !Number.isNaN(waNum);
+
+      // Valor constante da coluna "atualizar" (aplicado a todas as linhas).
+      const rawAt = String(els.atualizarValue.value || "").trim();
+      const atNum = rawAt === "" ? null : Number(rawAt);
+      const atIsNumeric = atNum !== null && !Number.isNaN(atNum);
 
       // Índice da coluna do nome dentro da planilha original ("" = nenhuma).
       const nameSel = els.nameColumn.value;
@@ -607,6 +614,9 @@
           if (nameVal !== null && nameVal !== undefined && nameVal !== "") {
             outRow[COB_NOME] = nameVal;
           }
+        }
+        if (rawAt !== "") {
+          outRow[COB_ATUALIZAR] = atIsNumeric ? atNum : rawAt;
         }
         if (rawWa !== "") {
           outRow[COB_WHATSAPP] = waIsNumeric ? waNum : rawWa;

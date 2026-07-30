@@ -174,11 +174,17 @@
           <p class="hint">
             Gera um arquivo igual ao modelo <strong>COBRANCA</strong>: a coluna
             <strong>telefone</strong> recebe o número já tratado, a coluna
-            <strong>nome</strong> vem da coluna selecionada acima, e a coluna
-            <strong>whatsapp</strong> é preenchida com o número abaixo em todas as linhas.
+            <strong>nome</strong> vem da coluna selecionada acima, e as colunas
+            <strong>atualizar</strong> e <strong>whatsapp</strong> são preenchidas
+            com os números abaixo em todas as linhas.
           </p>
         </div>
         <div class="cobranca-row">
+          <div class="field">
+            <label for="atualizar-value">Número da coluna "atualizar"</label>
+            <input type="number" id="atualizar-value" value="1" min="0" step="1" inputmode="numeric" />
+            <small class="hint">Aplicado a todas as linhas. Padrão: 1.</small>
+          </div>
           <div class="field">
             <label for="whatsapp-value">Número da coluna "whatsapp"</label>
             <input type="number" id="whatsapp-value" value="56" min="0" step="1" inputmode="numeric" />
@@ -200,6 +206,6 @@
     <span>Feita pela Prisme · <a href="https://github.com/nattanlima/corretor-planilhas" target="_blank" rel="noopener">código aberto</a> · roda 100% no navegador</span>
   </footer>
 
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

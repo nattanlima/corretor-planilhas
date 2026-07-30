@@ -20,7 +20,7 @@ App **100% no navegador** para tratar planilhas Excel e padronizar números de t
 - Estatísticas: total, tratados, duplicatas removidas, inválidos descartados
 - Exporta novo `.xlsx` com a coluna `whatsapp` adicionada no início + todas as colunas originais
 - A coluna `whatsapp` é gravada como texto, garantindo que o Excel não corte o `55` ou converta para notação científica
-- **Exportação no formato COBRANCA**: gera um arquivo com o mesmo layout do modelo `COBRANCA` (aba `Página1`, colunas `telefone`, `nome`, ..., `whatsapp`), com o número tratado em `telefone`, o `nome` da coluna selecionada e um valor fixo (padrão `56`, configurável) na coluna `whatsapp` em todas as linhas
+- **Exportação no formato COBRANCA**: gera um arquivo com o mesmo layout do modelo `COBRANCA` (aba `Página1`, colunas `telefone`, `nome`, ..., `whatsapp`), com o número tratado em `telefone`, o `nome` da coluna selecionada e valores fixos configuráveis nas colunas `atualizar` (padrão `1`) e `whatsapp` (padrão `56`) em todas as linhas
 
 ## Como usar
 
@@ -40,7 +40,8 @@ Além do download padrão, o passo **Resultado** traz um botão **"Baixar no for
 - Cabeçalho: `telefone`, `nome`, `email`, `cpfcnpj`, `genero`, `estado`, `cidade`, `referencia`, `aniversario`, `endereco`, (coluna vazia), `atualizar`, `carteira`, `whatsapp`, `tag`, `status`
 - **`telefone`** ← número já tratado (com DDI, gravado como texto)
 - **`nome`** ← coluna de nome selecionada no passo 2 (escolha "(nenhuma)" para deixar em branco)
-- **`whatsapp`** ← valor fixo aplicado a todas as linhas (padrão `56`, editável no próprio passo Resultado)
+- **`atualizar`** ← valor fixo aplicado a todas as linhas (padrão `1`, editável no próprio passo Resultado; deixe o campo vazio para a coluna sair em branco)
+- **`whatsapp`** ← valor fixo aplicado a todas as linhas (padrão `56`, editável no próprio passo Resultado; deixe o campo vazio para a coluna sair em branco)
 - Demais colunas ficam em branco
 
 ## Rodar localmente
