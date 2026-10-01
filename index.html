@@ -5,19 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tratador de Planilhas para WhatsApp</title>
   <meta name="description" content="Limpe, normalize e adicione o DDI 55 em listas de telefone de planilhas Excel para envio via WhatsApp. 100% no navegador." />
-  <link rel="stylesheet" href="styles.css?v=3" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>" />
+  <meta name="theme-color" content="#fafafa" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=4" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2300ba70'/%3E%3Crect x='10' y='6' width='12' height='20' rx='2.5' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath d='M14 22h4' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E" />
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
-      <span class="logo" aria-hidden="true">📱</span>
+      <span class="logo" aria-hidden="true">
+        <svg class="ico" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M10.5 18h3"/></svg>
+      </span>
       <div class="brand-text">
         <h1>Tratador de Planilhas</h1>
-        <p class="subtitle">Padroniza números de telefone para WhatsApp em um clique. Tudo roda no seu navegador — nada é enviado para servidores.</p>
+        <p class="subtitle">Padroniza números de telefone para WhatsApp em um clique. Tudo roda no seu navegador e nada é enviado para servidores.</p>
       </div>
-      <span class="badge" title="Nenhum dado sai do seu navegador">🔒 100% local</span>
+      <span class="badge" title="Nenhum dado sai do seu navegador">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        100% local
+      </span>
     </div>
   </header>
 
@@ -32,14 +41,18 @@
         </div>
       </div>
       <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Clique ou arraste um arquivo .xlsx aqui">
-        <div class="dz-icon">📂</div>
+        <div class="dz-icon" aria-hidden="true">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+        </div>
         <div class="dz-title">Arraste o arquivo aqui ou <span class="dz-link">clique para selecionar</span></div>
         <div class="dz-hint">Nenhum arquivo é enviado para servidores.</div>
         <input type="file" id="file-input" accept=".xlsx,.xls,.csv" hidden />
       </div>
       <div id="file-info" class="file-info hidden">
         <div class="file-meta">
-          <span class="file-icon" aria-hidden="true">📄</span>
+          <span class="file-icon" aria-hidden="true">
+            <svg class="ico" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M12 9v12"/></svg>
+          </span>
           <div class="file-meta-text">
             <span class="file-name" id="file-name"></span>
             <span class="file-extra" id="file-extra"></span>
@@ -161,9 +174,13 @@
       </div>
 
       <div class="actions">
-        <button class="btn-secondary" id="btn-back" type="button">← Ajustar configuração</button>
+        <button class="btn-secondary" id="btn-back" type="button">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+          Ajustar configuração
+        </button>
         <button class="btn-primary" id="btn-export" type="button">
-          <span class="btn-label">⬇ Baixar planilha tratada (.xlsx)</span>
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/></svg>
+          <span class="btn-label">Baixar planilha tratada (.xlsx)</span>
           <span class="btn-spinner" aria-hidden="true"></span>
         </button>
       </div>
@@ -191,7 +208,8 @@
             <small class="hint">Aplicado a todas as linhas. Padrão: 56.</small>
           </div>
           <button class="btn-primary" id="btn-export-cobranca" type="button">
-            <span class="btn-label">⬇ Baixar no formato COBRANCA (.xlsx)</span>
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/></svg>
+            <span class="btn-label">Baixar no formato COBRANCA (.xlsx)</span>
             <span class="btn-spinner" aria-hidden="true"></span>
           </button>
         </div>
