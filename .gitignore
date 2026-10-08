@@ -18,3 +18,4 @@ npm-debug.log*
 *.xls
 *.csv
 !sample.xlsx
+.impeccable/
