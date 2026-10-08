@@ -6,43 +6,31 @@ App **100% no navegador** para tratar planilhas Excel e padronizar números de t
 
 ## Funcionalidades
 
-- Upload por drag & drop ou clique (suporta `.xlsx`, `.xls`, `.csv`)
-- Detecção automática de qual coluna parece ser a do telefone (auto-pick)
-- Suporte a planilhas **sem cabeçalho** (caso do `Inad_1905.xlsx`) ou **com cabeçalho**
-- Seleção da aba (sheet) quando o arquivo tem várias
-- Limpeza configurável:
+- **Uma tela só**: soltou a planilha, o resultado já aparece. Mapeamento à esquerda, arquivo final ao vivo à direita
+- Upload por drag & drop em qualquer lugar da página ou por clique (`.xlsx`, `.xls`, `.csv`); soltar outro arquivo troca a planilha
+- **Exportação principal: Modelo de Disparo** (`<arquivo>_disparo.xlsx`), idêntico ao `Modelo de Disparo.xlsx`:
+  - Aba `Página1`, colunas `telefone`, `nome`, `email`, `cpfcnpj`, `genero`, `estado`, `cidade`, `referencia`, `aniversario`, `endereco`, (coluna K vazia), `atualizar`, `carteira`, `whatsapp`, `tag`, `status`
+  - **O operador escolhe onde cada dado vai**: para cada coluna do modelo, uma coluna da planilha, um valor fixo ou vazio
+  - `telefone` recebe o número já tratado (com DDI, gravado como texto)
+  - `atualizar` e `whatsapp` começam como valor fixo (`1` e `56`), editáveis
+- Mapeamento automático pelo nome do cabeçalho (nome, e-mail, CPF/CNPJ, cidade, UF, nascimento...) e detecção da coluna de telefone pelos dígitos
+- **Lembra as escolhas do último uso** (mapeamento, valores fixos e regras) no próprio navegador; na próxima planilha com os mesmos cabeçalhos é só baixar
+- Suporte a planilhas **com ou sem cabeçalho** e seleção da aba quando há várias
+- Limpeza configurável (recolhida por padrão, com resumo visível):
   - Remove tudo que não é dígito (espaços, parênteses, hífens, pontos, `+`, letras)
   - Adiciona DDI (padrão `55`) no início
-  - **Prefixo inteligente**: detecta se o número já está prefixado (12-13 dígitos começando com o DDI) e não duplica
-  - Filtra números inválidos por tamanho mínimo (padrão: 10 dígitos)
-  - Remove duplicatas (mantém a primeira ocorrência)
-- Preview lado a lado das primeiras 10 linhas antes de exportar
-- Estatísticas: total, tratados, duplicatas removidas, inválidos descartados
-- Exporta novo `.xlsx` com a coluna `whatsapp` adicionada no início + todas as colunas originais
-- A coluna `whatsapp` é gravada como texto, garantindo que o Excel não corte o `55` ou converta para notação científica
-- **Exportação no formato COBRANCA**: gera um arquivo com o mesmo layout do modelo `COBRANCA` (aba `Página1`, colunas `telefone`, `nome`, ..., `whatsapp`), com o número tratado em `telefone`, o `nome` da coluna selecionada e valores fixos configuráveis nas colunas `atualizar` (padrão `1`) e `whatsapp` (padrão `56`) em todas as linhas
+  - **Prefixo inteligente**: não duplica o DDI em números com 12-13 dígitos que já começam com ele
+  - Descarta números abaixo do mínimo de dígitos (padrão: 10)
+  - Remove repetidos (mantém a primeira ocorrência)
+- Prévia do arquivo final (até 200 linhas) e aba **Descartados** com linha, número original e motivo (repetido, curto demais, sem número)
+- Exportação secundária: planilha original com a coluna `whatsapp` no início (`<arquivo>_whatsapp.xlsx`)
 
 ## Como usar
 
 1. Abra o app (link do GitHub Pages ou rode localmente, veja abaixo)
-2. Arraste a planilha para a área de upload
-3. Escolha a aba e a coluna do telefone (geralmente já vem auto-selecionada)
-4. Ajuste as opções (DDI, mínimo de dígitos, duplicatas etc.)
-5. Clique em **Processar planilha**
-6. Confira o preview e os totais
-7. Clique em **Baixar planilha tratada (.xlsx)**
-
-## Exportar no formato COBRANCA
-
-Além do download padrão, o passo **Resultado** traz um botão **"Baixar no formato COBRANCA (.xlsx)"**, que gera um arquivo idêntico ao modelo `COBRANCA`:
-
-- Aba chamada `Página1`
-- Cabeçalho: `telefone`, `nome`, `email`, `cpfcnpj`, `genero`, `estado`, `cidade`, `referencia`, `aniversario`, `endereco`, (coluna vazia), `atualizar`, `carteira`, `whatsapp`, `tag`, `status`
-- **`telefone`** ← número já tratado (com DDI, gravado como texto)
-- **`nome`** ← coluna de nome selecionada no passo 2 (escolha "(nenhuma)" para deixar em branco)
-- **`atualizar`** ← valor fixo aplicado a todas as linhas (padrão `1`, editável no próprio passo Resultado; deixe o campo vazio para a coluna sair em branco)
-- **`whatsapp`** ← valor fixo aplicado a todas as linhas (padrão `56`, editável no próprio passo Resultado; deixe o campo vazio para a coluna sair em branco)
-- Demais colunas ficam em branco
+2. Solte a planilha na página
+3. Confira o mapeamento em **Onde cada dado vai** (na maioria das vezes já vem certo)
+4. Clique em **Baixar Modelo de Disparo**
 
 ## Rodar localmente
 
@@ -103,8 +91,9 @@ git push -u origin main
 ```
 corretor-planilhas/
 ├── index.html      # UI
-├── styles.css      # Estilo dark, inspirado no WhatsApp
+├── styles.css      # Visual claro padrão Prisme Chatbot
 ├── app.js          # Lógica (leitura/escrita xlsx, limpeza)
+├── PRODUCT.md      # Contexto do produto (usuários, princípios)
 ├── README.md
 └── .gitignore
 ```
